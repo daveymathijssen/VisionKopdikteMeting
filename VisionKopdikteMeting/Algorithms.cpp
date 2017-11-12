@@ -144,7 +144,7 @@ Mat TomatenAlgorithms::customDeltaY(Mat grayImage, int filter = 0)
 				p = abs(p - y);
 			}
 
-			deltaImageY.at<uchar>(i, j) = abs(p - y);
+			deltaImageY.at<uchar>(i, j) = p;
 
 		}
 	}
@@ -154,5 +154,5 @@ Mat TomatenAlgorithms::customDeltaY(Mat grayImage, int filter = 0)
 
 void TomatenAlgorithms::saveMatAsBMP(string name, Mat source)
 {
-	imwrite(name + ".bmp", source);
+	imwrite("output/" + name + ".bmp", source);
 }

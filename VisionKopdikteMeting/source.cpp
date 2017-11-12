@@ -15,7 +15,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	Mat image = imread("PlantSchool.jpg", CV_LOAD_IMAGE_COLOR);   
+	Mat image = imread("input/Tomatenplant.jpg", CV_LOAD_IMAGE_COLOR);   
 	if (!image.data)                           
 	{
 		cout << "Could not open or find the image" << std::endl;
@@ -25,12 +25,13 @@ int main(int argc, char** argv)
 	Mat gray_image;
 	cvtColor(image, gray_image, CV_BGR2GRAY);
 
-	Mat customDeltaY, customDeltaX, sobel, customDeltaXFiltered, customDeltaYFiltered;
+	Mat customDeltaY, customDeltaX, sobel, customDeltaXFiltered, customDeltaYFiltered, canny;
 	customDeltaXFiltered = TomatenAlgorithms::customDeltaX(gray_image, 30);
 	customDeltaYFiltered = TomatenAlgorithms::customDeltaY(gray_image, 30);
 	customDeltaY = TomatenAlgorithms::customDeltaY(gray_image, 0);
 	customDeltaX = TomatenAlgorithms::customDeltaX(gray_image, 0);
 	sobel = TomatenAlgorithms::sobel(gray_image);
+	Canny(image, canny, 50, 200, 3);
 
 	imshow("Source", image);
 	imshow("Gray image", gray_image);
@@ -39,13 +40,15 @@ int main(int argc, char** argv)
 	imshow("customDeltaY", customDeltaY);
 	imshow("customDeltaX", customDeltaX);
 	imshow("Sobel", sobel);
+	imshow("Canny", canny);
 
-	TomatenAlgorithms::saveMatAsBMP("grayImage.bmp", gray_image);
-	TomatenAlgorithms::saveMatAsBMP("customDeltaYFiltered.bmp", customDeltaYFiltered);
-	TomatenAlgorithms::saveMatAsBMP("customDeltaXFiltered.bmp", customDeltaXFiltered);
-	TomatenAlgorithms::saveMatAsBMP("customDeltaY.bmp", customDeltaY);
-	TomatenAlgorithms::saveMatAsBMP("customDeltaX.bmp", customDeltaX);
-	TomatenAlgorithms::saveMatAsBMP("sobel.bmp", sobel);
+	TomatenAlgorithms::saveMatAsBMP("grayImage", gray_image);
+	TomatenAlgorithms::saveMatAsBMP("customDeltaYFiltered", customDeltaYFiltered);
+	TomatenAlgorithms::saveMatAsBMP("customDeltaXFiltered", customDeltaXFiltered);
+	TomatenAlgorithms::saveMatAsBMP("customDeltaY", customDeltaY);
+	TomatenAlgorithms::saveMatAsBMP("customDeltaX", customDeltaX);
+	TomatenAlgorithms::saveMatAsBMP("sobel", sobel);
+	TomatenAlgorithms::saveMatAsBMP("canny", canny);
 
 	waitKey(0);
 
