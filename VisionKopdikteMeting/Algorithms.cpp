@@ -152,6 +152,73 @@ Mat TomatenAlgorithms::customDeltaY(Mat grayImage, int filter = 0)
 	return deltaImageY;
 }
 
+Mat TomatenAlgorithms::testCircleAlgoritm(Mat delta_image)
+{
+	int checkX[] = { 0,0,1,-1,-1,1,0,0,1,-1,-1,1 };
+	int checkY[] = { -1,1,1,1,-1,-1,-2,2,2,2,-2,-2 };
+	int checkAmount = 12;
+	int found = 0;
+	//blur_image = customDeltaXFiltered;
+	//5GaussianBlur(customDeltaXFiltered, blur_image,Size(7, 7),0,0);
+	for (int x = 0; x<delta_image.rows; x++)
+	{
+		for (int y = 0; y<delta_image.cols; y++)
+		{
+			//when black pixel
+			if (delta_image.at<uchar>(y, x) == 0) {
+				for (int i = 0; i < checkAmount; i++)
+				{
+					if (delta_image.at<uchar>((y + checkY[i]), (x + checkX[i])) > 0)
+					{
+						found++;
+					}
+					if (i == 2 && found >1)
+					{
+						delta_image.at<uchar>(y, x) = 255;
+					}
+					if (i == 6 && found > 4)
+					{
+						delta_image.at<uchar>(y, x) = 255;
+					}
+					if (i == 8 && found > 6)
+					{
+						delta_image.at<uchar>(y, x) = 255;
+					}
+					if (i == 12 && found>10)
+					{
+						delta_image.at<uchar>(y, x) = 255;
+					}
+				}
+				/*if (found == checkAmount)
+				{
+				blur_image.at<uchar>(y, x) = 255;
+				}*/
+				found = 0;
+			}
+			//when white pixel
+			else if (delta_image.at<uchar>(y, x) > 0) {
+				for (int i = 0; i<checkAmount; i++)
+				{
+					if (delta_image.at<uchar>((y + checkY[i]), (x + checkX[i])) == 0)
+					{
+						found++;
+					}
+					if (i == 6 && found> 5)
+					{
+						delta_image.at<uchar>(y, x) = 0;
+					}
+				}
+				/*if (found == checkAmount)
+				{
+				blur_image.at<uchar>(y, x) = 255;
+				}*/
+				found = 0;
+			}
+		}
+	}
+	return delta_image;
+}
+
 void TomatenAlgorithms::saveMatAsBMP(string name, Mat source)
 {
 	imwrite("output/" + name + ".bmp", source);

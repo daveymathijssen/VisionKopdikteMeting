@@ -22,6 +22,7 @@ public:
 	static Mat sobelY(Mat);
 	static Mat customDeltaX(Mat, int);
 	static Mat customDeltaY(Mat, int);
+	static Mat testCircleAlgoritm(Mat);
 	static void saveMatAsBMP(string,Mat);
 
 };
