@@ -154,12 +154,16 @@ Mat TomatenAlgorithms::customDeltaY(Mat grayImage, int filter = 0)
 
 Mat TomatenAlgorithms::testCircleAlgoritm(Mat delta_image)
 {
+	//Check is as follows: S=START zero pixel
+	//0|11|7|12|0
+	//0|5 |1|6 |0
+	//0|0 |S|0 |0
+	//0|4 |2|3 |0
+	//0|10|8|9 |0
 	int checkX[] = { 0,0,1,-1,-1,1,0,0,1,-1,-1,1 };
 	int checkY[] = { -1,1,1,1,-1,-1,-2,2,2,2,-2,-2 };
 	int checkAmount = 12;
 	int found = 0;
-	//blur_image = customDeltaXFiltered;
-	//5GaussianBlur(customDeltaXFiltered, blur_image,Size(7, 7),0,0);
 	for (int x = 0; x<delta_image.rows; x++)
 	{
 		for (int y = 0; y<delta_image.cols; y++)
@@ -180,7 +184,7 @@ Mat TomatenAlgorithms::testCircleAlgoritm(Mat delta_image)
 					{
 						delta_image.at<uchar>(y, x) = 255;
 					}
-					if (i == 8 && found > 6)
+					if (i == 8 && found > 5)
 					{
 						delta_image.at<uchar>(y, x) = 255;
 					}
@@ -189,13 +193,9 @@ Mat TomatenAlgorithms::testCircleAlgoritm(Mat delta_image)
 						delta_image.at<uchar>(y, x) = 255;
 					}
 				}
-				/*if (found == checkAmount)
-				{
-				blur_image.at<uchar>(y, x) = 255;
-				}*/
 				found = 0;
 			}
-			//when white pixel
+			//when black pixel
 			else if (delta_image.at<uchar>(y, x) > 0) {
 				for (int i = 0; i<checkAmount; i++)
 				{
@@ -203,15 +203,11 @@ Mat TomatenAlgorithms::testCircleAlgoritm(Mat delta_image)
 					{
 						found++;
 					}
-					if (i == 6 && found> 5)
+					if (i == 6 && found> 6)
 					{
 						delta_image.at<uchar>(y, x) = 0;
 					}
 				}
-				/*if (found == checkAmount)
-				{
-				blur_image.at<uchar>(y, x) = 255;
-				}*/
 				found = 0;
 			}
 		}

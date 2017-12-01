@@ -52,21 +52,11 @@ int main(int argc, char** argv)
 
 	//dilate(customDeltaXFiltered, dilation_image, Mat(), Point(-1, 0), 3, 1, 10);
 	//Imgproc.GaussianBlur(src, dst, new Size(45, 45), 0);
-	//GaussianBlur(src, dst, Size(5, 5), 0, 0);
-	//Check is as follows: S=START zero pixel
-	//0|11|7|12|0
-	//0|5 |1|6 |0
-	//0|0 |S|0 |0
-	//0|4 |2|3 |0
-	//0|10|8|9 |0
-	int checkX[] = { 0,0,1,-1,-1,1,0,0,1,-1,-1,1};
-	int checkY[] = { -1,1,1,1,-1,-1,-2,2,2,2,-2,-2};
-	int checkAmount = 12;
-	int found = 0;
 	blur_image = customDeltaXFiltered;
-	//5GaussianBlur(customDeltaXFiltered, blur_image,Size(7, 7),0,0);
+	//GaussianBlur(customDeltaXFiltered, blur_image,Size(7, 7),0,0);
 	TomatenAlgorithms::testCircleAlgoritm(blur_image);
 
+	TomatenAlgorithms::saveMatAsBMP("TestAlgoritm", blur_image);
 	imshow("Blurred_image", blur_image);
 	waitKey(0);
 
