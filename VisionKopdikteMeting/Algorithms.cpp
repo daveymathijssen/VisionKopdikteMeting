@@ -215,7 +215,7 @@ Mat TomatenAlgorithms::testCircleAlgoritm(Mat delta_image)
 	return delta_image;
 }
 
-Mat TomatenAlgorithms::spatialReasoning(Mat delta_image)
+Mat TomatenAlgorithms::spatialReasoning(Mat & delta_image)
 {
 	//Check is as follows: S=START zero pixel
 	//0 |0 |0 |0 |0
@@ -240,92 +240,54 @@ Mat TomatenAlgorithms::spatialReasoning(Mat delta_image)
 	int checkAmount = 15;
 	int found = 0;
 	bool foundLine = false;
-	for (int x = 0; x<delta_image.cols; x++)
+	for (int col = 0; col<delta_image.cols; col++)
 	{
-		for (int y = 0; y<delta_image.rows; y++)
+		for (int row = 0; row<delta_image.rows; row++)
 		{
 			//when black pixel
-			if (delta_image.at<uchar>(y, x) == 0) {
-				for (int i = 0; i <= checkAmount; i++)
-				{
-					if (y + checkAmount >= delta_image.rows)
-					{
-						break;
-					}
-					if (delta_image.at<uchar>((y + checkY[i]), (x + checkX[i])) > 0)
-					{
-						
-						if(foundLine && (delta_image.at<uchar>((y + checkY[i]-1), (x + checkX[i])) > 0) && (delta_image.at<uchar>((y + checkY[i]-2), (x + checkX[i])) > 0))
+			if (delta_image.at<uchar>(row, col) == 0) {
+				foundLine = false;
+						if((delta_image.at<uchar>((row-1), (col)) > 0) && (delta_image.at<uchar>((row-2), (col)) > 0))
 						{
-							delta_image.at<uchar>(y, x) = 255;
-							foundLine = false;
+							//delta_image.at<uchar>(y, x) = 255;
+							foundLine = true;
+							cout << "lijn gevonden op:" << row << "," << col << endl;
 						}
-						found++;
-					}
-					if(i==checkAmount&& ( delta_image.at<uchar>(y, x+1) == 0 && delta_image.at<uchar>(y, x-1) == 0))
+					if(foundLine && ( delta_image.at<uchar>(row, col+1) == 0 && delta_image.at<uchar>(row, col-1) == 0))
 					{
 						for(int j=0; j<(checkAmount-3);j++)
 						{
-							if (delta_image.at<uchar>((y + j), (x +1)) > 0)
+							if (delta_image.at<uchar>((row + j), (col+1)) > 0)
 							{
-								if (foundLine && (delta_image.at<uchar>((y + j - 1), (x +1)) > 0) && (delta_image.at<uchar>((y + j - 2), (x +1 )) > 0))
+								if ((delta_image.at<uchar>((row  +j+1), (col +1)) > 0) && (delta_image.at<uchar>((row +2+j), (col +1 )) > 0))
 								{
-									delta_image.at<uchar>(y, x) = 255;
+									delta_image.at<uchar>(row, col) = 255;
+									foundLine = false;
+								}
+							}
+							if (delta_image.at<uchar>((row + j), (col)) > 0)
+							{
+								if ((delta_image.at<uchar>((row+j+ 1), (col)) > 0) && (delta_image.at<uchar>((row+j+2), (col)) > 0))
+								{
+									delta_image.at<uchar>(row, col) = 255;
+									foundLine = false;
+								}
+							}
+							if (delta_image.at<uchar>((row + j), (col - 1)) > 0)
+							{
+								if ((delta_image.at<uchar>((row +1+j), (col -1)) > 0) && (delta_image.at<uchar>((row +j+2), (col-1)) > 0))
+								{
+									delta_image.at<uchar>(row, col) = 255;
 									foundLine = false;
 								}
 							}
 						}
-						for (int h = 0; h<(checkAmount - 3); h++)
-						{
-							if (delta_image.at<uchar>((y + h), (x - 1)) > 0)
-							{
-								if (foundLine && (delta_image.at<uchar>((y + h - 1), (x -1)) > 0) && (delta_image.at<uchar>((y + checkY[i] - 2), (x -1)) > 0))
-								{
-									delta_image.at<uchar>(y, x) = 255;
-									foundLine = false;
-								}
-							}
-						}
-					}
-					if (i == 3 && found ==3)
-					{
-						foundLine = true;
 						
-						//delta_image.at<uchar>(y, x) = 255;
 					}
-					if (i == 6 && found > 4)
-					{
-						delta_image.at<uchar>(y, x) = 255;
-					}
-					if (i == 8 && found > 5)
-					{
-						delta_image.at<uchar>(y, x) = 255;
-					}
-					if (i == 12 && found>8)
-					{
-						delta_image.at<uchar>(y, x) = 255;
-					}
+					foundLine = false;
 				}
-				foundLine = false;
-				found = 0;
 			}
-			//when black pixel
-			/*else if (delta_image.at<uchar>(y, x) > 0) {
-				for (int i = 0; i<checkAmount; i++)
-				{
-					if (delta_image.at<uchar>((y + checkY[i]), (x + checkX[i])) == 0)
-					{
-						found++;
-					}
-					if (i == 6 && found> 6)
-					{
-						delta_image.at<uchar>(y, x) = 0;
-					}
-				}
-				found = 0;
-			}*/
 		}
-	}
 	return delta_image;
 }
 

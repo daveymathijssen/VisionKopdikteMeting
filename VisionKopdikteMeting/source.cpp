@@ -15,7 +15,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	Mat image = imread("input/Tomatenplant.jpg", CV_LOAD_IMAGE_COLOR);   
+	Mat image = imread("input/tomatenplant.jpg", CV_LOAD_IMAGE_COLOR);   
 	if (!image.data)                           
 	{
 		cout << "Could not open or find the image" << std::endl;
@@ -54,6 +54,7 @@ int main(int argc, char** argv)
 	//Imgproc.GaussianBlur(src, dst, new Size(45, 45), 0);
 	blur_image = customDeltaXFiltered;
 	//GaussianBlur(customDeltaXFiltered, blur_image,Size(7, 7),0,0);
+	cout << "sort " << blur_image.channels()<< endl;
 	TomatenAlgorithms::spatialReasoning(blur_image);
 	imshow("Blurred_imageFirst", blur_image);
 	TomatenAlgorithms::spatialReasoning(blur_image);
