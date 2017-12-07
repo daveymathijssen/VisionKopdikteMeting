@@ -54,7 +54,9 @@ int main(int argc, char** argv)
 	//Imgproc.GaussianBlur(src, dst, new Size(45, 45), 0);
 	blur_image = customDeltaXFiltered;
 	//GaussianBlur(customDeltaXFiltered, blur_image,Size(7, 7),0,0);
-	TomatenAlgorithms::testCircleAlgoritm(blur_image);
+	TomatenAlgorithms::spatialReasoning(blur_image);
+	imshow("Blurred_imageFirst", blur_image);
+	TomatenAlgorithms::spatialReasoning(blur_image);
 
 	TomatenAlgorithms::saveMatAsBMP("TestAlgoritm", blur_image);
 	imshow("Blurred_image", blur_image);

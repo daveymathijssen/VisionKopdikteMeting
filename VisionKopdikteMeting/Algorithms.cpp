@@ -188,7 +188,7 @@ Mat TomatenAlgorithms::testCircleAlgoritm(Mat delta_image)
 					{
 						delta_image.at<uchar>(y, x) = 255;
 					}
-					if (i == 12 && found>10)
+					if (i == 12 && found>8)
 					{
 						delta_image.at<uchar>(y, x) = 255;
 					}
@@ -210,6 +210,120 @@ Mat TomatenAlgorithms::testCircleAlgoritm(Mat delta_image)
 				}
 				found = 0;
 			}
+		}
+	}
+	return delta_image;
+}
+
+Mat TomatenAlgorithms::spatialReasoning(Mat delta_image)
+{
+	//Check is as follows: S=START zero pixel
+	//0 |0 |0 |0 |0
+	//0 |0 |3 |0 |0
+	//0 |0 |2 |0 |0
+	//0 |0 |1 |0 |0
+	//0 |0 |S |0 |0
+	//0 |0 |4 |0 |0
+	//0 |0 |5 |0 |0
+	//0 |0 |6 |0 |0
+	//0 |0 |7 |0 |0
+	//0 |0 |8 |0 |0
+	//0 |0 |9 |0 |0
+	//0 |0 |10|0 |0
+	//0 |0 |11|0 |0
+	//0 |0 |12|0 |0
+	//0 |0 |13|0 |0
+	//0 |0 |14|0 |0
+	//0 |0 |15|0 |0
+	int checkX[] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	int checkY[] = { -1,-2,-3,1,2,3,4,5,6,7,8,9,10,11,12,13,14};
+	int checkAmount = 15;
+	int found = 0;
+	bool foundLine = false;
+	for (int x = 0; x<delta_image.cols; x++)
+	{
+		for (int y = 0; y<delta_image.rows; y++)
+		{
+			//when black pixel
+			if (delta_image.at<uchar>(y, x) == 0) {
+				for (int i = 0; i <= checkAmount; i++)
+				{
+					if (y + checkAmount >= delta_image.rows)
+					{
+						break;
+					}
+					if (delta_image.at<uchar>((y + checkY[i]), (x + checkX[i])) > 0)
+					{
+						
+						if(foundLine && (delta_image.at<uchar>((y + checkY[i]-1), (x + checkX[i])) > 0) && (delta_image.at<uchar>((y + checkY[i]-2), (x + checkX[i])) > 0))
+						{
+							delta_image.at<uchar>(y, x) = 255;
+							foundLine = false;
+						}
+						found++;
+					}
+					if(i==checkAmount&& ( delta_image.at<uchar>(y, x+1) == 0 && delta_image.at<uchar>(y, x-1) == 0))
+					{
+						for(int j=0; j<(checkAmount-3);j++)
+						{
+							if (delta_image.at<uchar>((y + j), (x +1)) > 0)
+							{
+								if (foundLine && (delta_image.at<uchar>((y + j - 1), (x +1)) > 0) && (delta_image.at<uchar>((y + j - 2), (x +1 )) > 0))
+								{
+									delta_image.at<uchar>(y, x) = 255;
+									foundLine = false;
+								}
+							}
+						}
+						for (int h = 0; h<(checkAmount - 3); h++)
+						{
+							if (delta_image.at<uchar>((y + h), (x - 1)) > 0)
+							{
+								if (foundLine && (delta_image.at<uchar>((y + h - 1), (x -1)) > 0) && (delta_image.at<uchar>((y + checkY[i] - 2), (x -1)) > 0))
+								{
+									delta_image.at<uchar>(y, x) = 255;
+									foundLine = false;
+								}
+							}
+						}
+					}
+					if (i == 3 && found ==3)
+					{
+						foundLine = true;
+						
+						//delta_image.at<uchar>(y, x) = 255;
+					}
+					if (i == 6 && found > 4)
+					{
+						delta_image.at<uchar>(y, x) = 255;
+					}
+					if (i == 8 && found > 5)
+					{
+						delta_image.at<uchar>(y, x) = 255;
+					}
+					if (i == 12 && found>8)
+					{
+						delta_image.at<uchar>(y, x) = 255;
+					}
+				}
+				foundLine = false;
+				found = 0;
+			}
+			//when black pixel
+			/*else if (delta_image.at<uchar>(y, x) > 0) {
+				for (int i = 0; i<checkAmount; i++)
+				{
+					if (delta_image.at<uchar>((y + checkY[i]), (x + checkX[i])) == 0)
+					{
+						found++;
+					}
+					if (i == 6 && found> 6)
+					{
+						delta_image.at<uchar>(y, x) = 0;
+					}
+				}
+				found = 0;
+			}*/
 		}
 	}
 	return delta_image;
