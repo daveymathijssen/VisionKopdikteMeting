@@ -23,6 +23,8 @@ public:
 	static Mat customDeltaX(Mat, int);
 	static Mat customDeltaY(Mat, int);
 	static Mat testCircleAlgoritm(Mat);
+	static Mat spatialReasoningBottomToTop(Mat &);
+	static Mat spatialReasoningTopToBottom(Mat &);
 	static void saveMatAsBMP(string,Mat);
 
 };

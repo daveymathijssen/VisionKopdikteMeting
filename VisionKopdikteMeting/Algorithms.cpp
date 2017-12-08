@@ -188,7 +188,7 @@ Mat TomatenAlgorithms::testCircleAlgoritm(Mat delta_image)
 					{
 						delta_image.at<uchar>(y, x) = 255;
 					}
-					if (i == 12 && found>10)
+					if (i == 12 && found>8)
 					{
 						delta_image.at<uchar>(y, x) = 255;
 					}
@@ -212,6 +212,135 @@ Mat TomatenAlgorithms::testCircleAlgoritm(Mat delta_image)
 			}
 		}
 	}
+	return delta_image;
+}
+
+
+//func fill in horizontal gaps between lines for a given image, scanning lines from top to bottom
+Mat TomatenAlgorithms::spatialReasoningTopToBottom(Mat & delta_image)
+{
+	const int checkAmount = 12; //check this amount of pixels in a column
+	bool foundLine = false;
+	const int fillValue = 254;
+
+	for (int col = 0; col<delta_image.cols; col++)
+	{
+		for (int row = 0; row<delta_image.rows; row++)
+		{
+			//when the pixel is black proceed, ignore all pixels that are not black
+			if (delta_image.at<uchar>(row, col) == 0) {
+				foundLine = false;
+				
+				//check if there are two filled in pixels on top of the current pixel
+				if((delta_image.at<uchar>((row-1), (col)) > 0) && (delta_image.at<uchar>((row-2), (col)) > 0))
+				{
+					foundLine = true;
+				}
+
+				//if a line is found, check if the right and left pixel (of the current pixel) are black, continue
+				if(foundLine && ( delta_image.at<uchar>(row, col+1) == 0 && delta_image.at<uchar>(row, col-1) == 0))
+				{
+					//check if there are pixels in the current column and the left and right column. If so, fill in the current pixel
+					for(int j=0; j<(checkAmount);j++)
+					{
+						if (delta_image.at<uchar>((row + j), (col+1)) > 0)
+						{
+							if ((delta_image.at<uchar>((row  +j+1), (col +1)) > 0) && (delta_image.at<uchar>((row +2+j), (col +1 )) > 0))
+							{
+								delta_image.at<uchar>(row, col) = fillValue;
+								foundLine = false;
+							}
+						}
+						if (delta_image.at<uchar>((row + j), (col)) > 0)
+						{
+							if ((delta_image.at<uchar>((row+j+ 1), (col)) > 0) && (delta_image.at<uchar>((row+j+2), (col)) > 0))
+							{
+								delta_image.at<uchar>(row, col) = fillValue;
+								foundLine = false;
+							}
+						}
+						if (delta_image.at<uchar>((row + j), (col - 1)) > 0)
+						{
+							if ((delta_image.at<uchar>((row +1+j), (col -1)) > 0) && (delta_image.at<uchar>((row +j+2), (col-1)) > 0))
+							{
+								delta_image.at<uchar>(row, col) = fillValue;
+								foundLine = false;
+							}
+						}
+					}	
+				}
+
+				//reset foundLine variable
+				foundLine = false;
+
+			}
+		}
+	}
+	
+	return delta_image;
+}
+
+//func fill in horizontal gaps between lines for a given image, scanning lines from top to bottom
+Mat TomatenAlgorithms::spatialReasoningBottomToTop(Mat & delta_image)
+{
+	const int checkAmount = 12; //check this amount of pixels in a column
+	bool foundLine = false;
+	const int fillValue = 254;
+
+	for (int col = delta_image.cols - 1; col >= 0; col--)
+	{
+		for (int row = delta_image.rows - 1; row >= 0; row--)
+		{
+			//when the pixel is black proceed, ignore all pixels that are not black
+			if (delta_image.at<uchar>(row, col) == 0) {
+				foundLine = false;
+
+				//check if there are two filled in pixels on top of the current pixel
+				if ((delta_image.at<uchar>((row + 1), (col)) > 0) && (delta_image.at<uchar>((row + 2), (col)) > 0))
+				{
+					foundLine = true;
+				}
+
+				//if a line is found, check if the right and left pixel (of the current pixel) are black, continue
+				if (foundLine && (delta_image.at<uchar>(row, col + 1) == 0 && delta_image.at<uchar>(row, col - 1) == 0))
+				{
+					//check if there are pixels in the current column and the left and right column. If so, fill in the current pixel
+					for (int j = 0; j<(checkAmount); j++)
+					{
+						if (delta_image.at<uchar>((row - j), (col + 1)) > 0)
+						{
+							if ((delta_image.at<uchar>((row - j - 1), (col + 1)) > 0) && (delta_image.at<uchar>((row - 2 - j), (col + 1)) > 0))
+							{
+								delta_image.at<uchar>(row, col) = fillValue;
+								foundLine = false;
+							}
+						}
+						if (delta_image.at<uchar>((row - j), (col)) > 0)
+						{
+							if ((delta_image.at<uchar>((row - j - 1), (col)) > 0) && (delta_image.at<uchar>((row - j - 2), (col)) > 0))
+							{
+								delta_image.at<uchar>(row, col) = fillValue;
+								foundLine = false;
+							}
+						}
+						if (delta_image.at<uchar>((row - j), (col - 1)) > 0)
+						{
+							if ((delta_image.at<uchar>((row - 1 - j), (col - 1)) > 0) && (delta_image.at<uchar>((row - j - 2), (col - 1)) > 0))
+							{
+								delta_image.at<uchar>(row, col) = fillValue;
+								foundLine = false;
+							}
+						}
+					}
+				}
+
+				//reset foundLine variable
+				foundLine = false;
+
+			}
+		}
+	}
+
 	return delta_image;
 }
 
