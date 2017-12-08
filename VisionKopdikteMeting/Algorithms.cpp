@@ -215,79 +215,132 @@ Mat TomatenAlgorithms::testCircleAlgoritm(Mat delta_image)
 	return delta_image;
 }
 
-Mat TomatenAlgorithms::spatialReasoning(Mat & delta_image)
+
+//func fill in horizontal gaps between lines for a given image, scanning lines from top to bottom
+Mat TomatenAlgorithms::spatialReasoningTopToBottom(Mat & delta_image)
 {
-	//Check is as follows: S=START zero pixel
-	//0 |0 |0 |0 |0
-	//0 |0 |3 |0 |0
-	//0 |0 |2 |0 |0
-	//0 |0 |1 |0 |0
-	//0 |0 |S |0 |0
-	//0 |0 |4 |0 |0
-	//0 |0 |5 |0 |0
-	//0 |0 |6 |0 |0
-	//0 |0 |7 |0 |0
-	//0 |0 |8 |0 |0
-	//0 |0 |9 |0 |0
-	//0 |0 |10|0 |0
-	//0 |0 |11|0 |0
-	//0 |0 |12|0 |0
-	//0 |0 |13|0 |0
-	//0 |0 |14|0 |0
-	//0 |0 |15|0 |0
-	int checkX[] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-	int checkY[] = { -1,-2,-3,1,2,3,4,5,6,7,8,9,10,11,12,13,14};
-	int checkAmount = 15;
-	int found = 0;
+	const int checkAmount = 12; //check this amount of pixels in a column
 	bool foundLine = false;
+	const int fillValue = 254;
+
 	for (int col = 0; col<delta_image.cols; col++)
 	{
 		for (int row = 0; row<delta_image.rows; row++)
 		{
-			//when black pixel
+			//when the pixel is black proceed, ignore all pixels that are not black
 			if (delta_image.at<uchar>(row, col) == 0) {
 				foundLine = false;
-						if((delta_image.at<uchar>((row-1), (col)) > 0) && (delta_image.at<uchar>((row-2), (col)) > 0))
-						{
-							//delta_image.at<uchar>(y, x) = 255;
-							foundLine = true;
-							cout << "lijn gevonden op:" << row << "," << col << endl;
-						}
-					if(foundLine && ( delta_image.at<uchar>(row, col+1) == 0 && delta_image.at<uchar>(row, col-1) == 0))
-					{
-						for(int j=0; j<(checkAmount-3);j++)
-						{
-							if (delta_image.at<uchar>((row + j), (col+1)) > 0)
-							{
-								if ((delta_image.at<uchar>((row  +j+1), (col +1)) > 0) && (delta_image.at<uchar>((row +2+j), (col +1 )) > 0))
-								{
-									delta_image.at<uchar>(row, col) = 255;
-									foundLine = false;
-								}
-							}
-							if (delta_image.at<uchar>((row + j), (col)) > 0)
-							{
-								if ((delta_image.at<uchar>((row+j+ 1), (col)) > 0) && (delta_image.at<uchar>((row+j+2), (col)) > 0))
-								{
-									delta_image.at<uchar>(row, col) = 255;
-									foundLine = false;
-								}
-							}
-							if (delta_image.at<uchar>((row + j), (col - 1)) > 0)
-							{
-								if ((delta_image.at<uchar>((row +1+j), (col -1)) > 0) && (delta_image.at<uchar>((row +j+2), (col-1)) > 0))
-								{
-									delta_image.at<uchar>(row, col) = 255;
-									foundLine = false;
-								}
-							}
-						}
-						
-					}
-					foundLine = false;
+				
+				//check if there are two filled in pixels on top of the current pixel
+				if((delta_image.at<uchar>((row-1), (col)) > 0) && (delta_image.at<uchar>((row-2), (col)) > 0))
+				{
+					foundLine = true;
 				}
+
+				//if a line is found, check if the right and left pixel (of the current pixel) are black, continue
+				if(foundLine && ( delta_image.at<uchar>(row, col+1) == 0 && delta_image.at<uchar>(row, col-1) == 0))
+				{
+					//check if there are pixels in the current column and the left and right column. If so, fill in the current pixel
+					for(int j=0; j<(checkAmount);j++)
+					{
+						if (delta_image.at<uchar>((row + j), (col+1)) > 0)
+						{
+							if ((delta_image.at<uchar>((row  +j+1), (col +1)) > 0) && (delta_image.at<uchar>((row +2+j), (col +1 )) > 0))
+							{
+								delta_image.at<uchar>(row, col) = fillValue;
+								foundLine = false;
+							}
+						}
+						if (delta_image.at<uchar>((row + j), (col)) > 0)
+						{
+							if ((delta_image.at<uchar>((row+j+ 1), (col)) > 0) && (delta_image.at<uchar>((row+j+2), (col)) > 0))
+							{
+								delta_image.at<uchar>(row, col) = fillValue;
+								foundLine = false;
+							}
+						}
+						if (delta_image.at<uchar>((row + j), (col - 1)) > 0)
+						{
+							if ((delta_image.at<uchar>((row +1+j), (col -1)) > 0) && (delta_image.at<uchar>((row +j+2), (col-1)) > 0))
+							{
+								delta_image.at<uchar>(row, col) = fillValue;
+								foundLine = false;
+							}
+						}
+					}	
+				}
+
+				//reset foundLine variable
+				foundLine = false;
+
 			}
 		}
+	}
+	
+	return delta_image;
+}
+
+//func fill in horizontal gaps between lines for a given image, scanning lines from top to bottom
+Mat TomatenAlgorithms::spatialReasoningBottomToTop(Mat & delta_image)
+{
+	const int checkAmount = 12; //check this amount of pixels in a column
+	bool foundLine = false;
+	const int fillValue = 254;
+
+	for (int col = delta_image.cols - 1; col >= 0; col--)
+	{
+		for (int row = delta_image.rows - 1; row >= 0; row--)
+		{
+			//when the pixel is black proceed, ignore all pixels that are not black
+			if (delta_image.at<uchar>(row, col) == 0) {
+				foundLine = false;
+
+				//check if there are two filled in pixels on top of the current pixel
+				if ((delta_image.at<uchar>((row + 1), (col)) > 0) && (delta_image.at<uchar>((row + 2), (col)) > 0))
+				{
+					foundLine = true;
+				}
+
+				//if a line is found, check if the right and left pixel (of the current pixel) are black, continue
+				if (foundLine && (delta_image.at<uchar>(row, col + 1) == 0 && delta_image.at<uchar>(row, col - 1) == 0))
+				{
+					//check if there are pixels in the current column and the left and right column. If so, fill in the current pixel
+					for (int j = 0; j<(checkAmount); j++)
+					{
+						if (delta_image.at<uchar>((row - j), (col + 1)) > 0)
+						{
+							if ((delta_image.at<uchar>((row - j - 1), (col + 1)) > 0) && (delta_image.at<uchar>((row - 2 - j), (col + 1)) > 0))
+							{
+								delta_image.at<uchar>(row, col) = fillValue;
+								foundLine = false;
+							}
+						}
+						if (delta_image.at<uchar>((row - j), (col)) > 0)
+						{
+							if ((delta_image.at<uchar>((row - j - 1), (col)) > 0) && (delta_image.at<uchar>((row - j - 2), (col)) > 0))
+							{
+								delta_image.at<uchar>(row, col) = fillValue;
+								foundLine = false;
+							}
+						}
+						if (delta_image.at<uchar>((row - j), (col - 1)) > 0)
+						{
+							if ((delta_image.at<uchar>((row - 1 - j), (col - 1)) > 0) && (delta_image.at<uchar>((row - j - 2), (col - 1)) > 0))
+							{
+								delta_image.at<uchar>(row, col) = fillValue;
+								foundLine = false;
+							}
+						}
+					}
+				}
+
+				//reset foundLine variable
+				foundLine = false;
+
+			}
+		}
+	}
+
 	return delta_image;
 }
 
