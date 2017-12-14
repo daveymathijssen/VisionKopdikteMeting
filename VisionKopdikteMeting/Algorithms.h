@@ -25,6 +25,7 @@ public:
 	static Mat testCircleAlgoritm(Mat);
 	static Mat spatialReasoningBottomToTop(Mat &);
 	static Mat spatialReasoningTopToBottom(Mat &);
+	static Mat filterStem(Mat &);
 	static void saveMatAsBMP(string,Mat);
 
 };

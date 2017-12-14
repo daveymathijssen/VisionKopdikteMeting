@@ -87,6 +87,9 @@ int main(int argc, char** argv)
 	TomatenAlgorithms::saveMatAsBMP("spationalReasoningcombinedTreshold", spationalReasoningTopToBottom);
 	imshow("Spational reasoning combined Treshold", spationalReasoningTopToBottom);
 
+	imshow("Stengel filtered",TomatenAlgorithms::filterStem(spationalReasoningTopToBottom));
+
+
 	//Mat test, stats, centroids;
 
 	//connectedComponents(spationalReasoningTopToBottom, test);

@@ -344,6 +344,39 @@ Mat TomatenAlgorithms::spatialReasoningBottomToTop(Mat & delta_image)
 	return delta_image;
 }
 
+//func fill in horizontal gaps between lines for a given image, scanning lines from top to bottom
+Mat TomatenAlgorithms::filterStem(Mat & spacialImage) {
+	vector<vector<Point>> contours;
+	vector<Vec4i> hierarchy;
+	Mat filteredTomatoplant(spacialImage.rows, spacialImage.cols, CV_8UC1, Scalar::all(0));
+	int largestArea = 0;
+	int secondLargestArea = 0;
+	int largestContourIndex = 0;
+	int secondLargestContourIndex = 0;
+	findContours(spacialImage, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
+
+	for (int i = 0; i < contours.size(); i++)
+	{
+		if (boundingRect(contours[i]).height > largestArea) {
+			largestArea = boundingRect(contours[i]).height;
+			largestContourIndex = i;
+		}
+	}
+	for (int i = 0; i < contours.size(); i++)
+	{
+		if (boundingRect(contours[i]).height<largestArea && boundingRect(contours[i]).height>secondLargestArea) {
+			secondLargestArea = boundingRect(contours[i]).height;
+			secondLargestContourIndex = i;
+		}
+	}
+	Scalar color(255, 255, 255);
+	cout << "largest area = " << largestArea << endl;
+	cout << "second largeset area= " << secondLargestArea << endl;
+	drawContours(filteredTomatoplant, contours, largestContourIndex, color, CV_FILLED, 8, hierarchy);
+	drawContours(filteredTomatoplant, contours, secondLargestContourIndex, color, CV_FILLED, 8, hierarchy);
+	return filteredTomatoplant;
+}
+
 void TomatenAlgorithms::saveMatAsBMP(string name, Mat source)
 {
 	imwrite("output/" + name + ".bmp", source);
