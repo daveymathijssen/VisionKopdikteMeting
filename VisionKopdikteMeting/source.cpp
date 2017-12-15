@@ -15,7 +15,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	Mat image = imread("input/tomatenplant.jpg", CV_LOAD_IMAGE_COLOR);   
+	Mat image = imread("input/PlantSchoolv2.jpg", CV_LOAD_IMAGE_COLOR);   
 	if (!image.data)                           
 	{
 		cout << "Could not open or find the image" << std::endl;
