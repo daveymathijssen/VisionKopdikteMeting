@@ -31,6 +31,7 @@ int main(int argc, char** argv)
 	Mat customDeltaX = TomatenAlgorithms::customDeltaX(gray_image, 0);
 	Mat sobel = TomatenAlgorithms::sobel(gray_image);
 	Mat canny;
+	Mat stemFiltered;
 	Canny(image, canny, 50, 200, 3);
 
 	imshow("Source", image);
@@ -87,7 +88,9 @@ int main(int argc, char** argv)
 	TomatenAlgorithms::saveMatAsBMP("spationalReasoningcombinedTreshold", spationalReasoningTopToBottom);
 	imshow("Spational reasoning combined Treshold", spationalReasoningTopToBottom);
 
-	imshow("Stengel filtered",TomatenAlgorithms::filterStem(spationalReasoningTopToBottom));
+	stemFiltered = TomatenAlgorithms::filterStem(spationalReasoningTopToBottom);
+	imshow("stem filtered", stemFiltered);
+	TomatenAlgorithms::saveMatAsBMP("stem filtered", stemFiltered);
 
 
 	//Mat test, stats, centroids;

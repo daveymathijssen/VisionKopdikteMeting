@@ -231,10 +231,13 @@ Mat TomatenAlgorithms::spatialReasoningTopToBottom(Mat & delta_image)
 			if (delta_image.at<uchar>(row, col) == 0) {
 				foundLine = false;
 				
-				//check if there are two filled in pixels on top of the current pixel
-				if((delta_image.at<uchar>((row-1), (col)) > 0) && (delta_image.at<uchar>((row-2), (col)) > 0))
+				if (row > 2)
 				{
-					foundLine = true;
+					//check if there are two filled in pixels on top of the current pixel
+					if ((delta_image.at<uchar>((row - 1), (col)) > 0) && (delta_image.at<uchar>((row - 2), (col)) > 0))
+					{
+						foundLine = true;
+					}
 				}
 
 				//if a line is found, check if the right and left pixel (of the current pixel) are black, continue
@@ -344,36 +347,70 @@ Mat TomatenAlgorithms::spatialReasoningBottomToTop(Mat & delta_image)
 	return delta_image;
 }
 
-//func fill in horizontal gaps between lines for a given image, scanning lines from top to bottom
+//func filter stem
 Mat TomatenAlgorithms::filterStem(Mat & spacialImage) {
 	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
+	//create new mat for filtered stem
 	Mat filteredTomatoplant(spacialImage.rows, spacialImage.cols, CV_8UC1, Scalar::all(0));
-	int largestArea = 0;
-	int secondLargestArea = 0;
+	int largestHeight = 0;
+	int secondLargestHeight = 0;
 	int largestContourIndex = 0;
 	int secondLargestContourIndex = 0;
+	//find all contours
 	findContours(spacialImage, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
 
 	for (int i = 0; i < contours.size(); i++)
 	{
-		if (boundingRect(contours[i]).height > largestArea) {
-			largestArea = boundingRect(contours[i]).height;
+		//if rectangle height is bigger than largestheight, set new largestheight
+		if (boundingRect(contours[i]).height > largestHeight) {
+			largestHeight = boundingRect(contours[i]).height;
 			largestContourIndex = i;
 		}
 	}
 	for (int i = 0; i < contours.size(); i++)
 	{
-		if (boundingRect(contours[i]).height<largestArea && boundingRect(contours[i]).height>secondLargestArea) {
-			secondLargestArea = boundingRect(contours[i]).height;
+		//if rectangle height is bigger than secondlargestheight and smaller than largestheight, set new secondlargestheight
+		if (boundingRect(contours[i]).height<largestHeight && boundingRect(contours[i]).height>secondLargestHeight) {
+			secondLargestHeight = boundingRect(contours[i]).height;
 			secondLargestContourIndex = i;
 		}
 	}
+	//use white color
 	Scalar color(255, 255, 255);
-	cout << "largest area = " << largestArea << endl;
-	cout << "second largeset area= " << secondLargestArea << endl;
+	cout << "largest area = " << largestHeight << endl;
+	cout << "second largeset area= " << secondLargestHeight << endl;
+	//Draw the largest and the second largest contour
 	drawContours(filteredTomatoplant, contours, largestContourIndex, color, CV_FILLED, 8, hierarchy);
 	drawContours(filteredTomatoplant, contours, secondLargestContourIndex, color, CV_FILLED, 8, hierarchy);
+
+
+	int beginStemX, beginStemY;
+	for (int j = 0; j< filteredTomatoplant.cols; j++)
+	{
+		for (int i = 0; i < filteredTomatoplant.rows; i++)
+		{
+			//when first filled pixel is found set startposition.
+			if(filteredTomatoplant.at<uchar>(i, j)>0)
+			{
+				beginStemX = j;
+				beginStemY = i;
+				for(int k=j+2;k<filteredTomatoplant.rows;k++)
+				{
+					//when second filled pixel is found calculate difference
+					if (filteredTomatoplant.at<uchar>(i, k) > 0)
+					{
+						// if difference is bigger than 10 pixels 
+						if ((k + 2) - beginStemX > 10)
+						{
+							cout << "x begin = " << beginStemX << " Y " << beginStemY << " x end = " << (k + 2) << " Y " << j << " difference = " << (k + 2) - beginStemX << endl;
+						}
+						break;
+					}
+				}
+			}
+		}
+	}
 	return filteredTomatoplant;
 }
 
